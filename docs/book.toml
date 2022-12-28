@@ -1,0 +1,14 @@
+[book]
+authors = ["lockbox"]
+language = "en"
+multilingual = false
+src = "src"
+title = "pd-platform"
+
+
+[output.html]
+default-theme = "ayu"
+preferred-dark-theme = "coal"
+mathjax-support = true
+git-repository-url = "https://github.com/lockbox/pd-platform"
+cname = "pd-platform.lockbox.sh"
