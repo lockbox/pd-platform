@@ -2,5 +2,5 @@
 
 It looks like this;
 
-![layout.svg](./binary_structure.svg)
-<img src="./binary_structure.svg">
+![layout.svg](./layout.png)
+<img src="./layout.png">
