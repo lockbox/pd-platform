@@ -1,0 +1,25 @@
+(def boxes-per-row 4)
+(def box-width 50)
+(defattrs :bg-green {:fill "#a0ffa0"})
+(defattrs :bg-yellow {:fill "#ffffa0"})
+(defattrs :bg-pink {:fill "#ffb0a0"})
+(defattrs :bg-cyan {:fill "#a0fafa"})
+(defattrs :bg-purple {:fill "#e4b5f7"})
+
+(defn draw-group-label-header
+  [span label]
+  (draw-box (text label [:math {:font-size 12}]) {:span span :borders #{} :height 14}))
+
+(draw-column-headers)
+(draw-box (text "&PDEventHandler" [:hex]) [{:span 4} :bg-cyan])
+(draw-box (text "&bss_start" :hex) [{:span 4} :bg-yellow])
+(draw-box (text "&bss_end" :hex) [{:span 4} :bg-yellow])
+(draw-gap (hex-text ".text") [:bg-green])
+(draw-gap (hex-text ".data"))
+(draw-box (hex-text "bss start") [{:span 4} :bg-yellow])
+(draw-padding 0x1c "" [:box-below :bg-yellow :hex])
+(draw-box (hex-text ".bss.pdrealloc") [:bg-yellow {:span 4}])
+(draw-box (hex-text ".bss.pd") [:bg-yellow {:span 4}])
+
+(draw-box (hex-text "bss end") [{:span 4} :bg-yellow])
+(draw-bottom)
