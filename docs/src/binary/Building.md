@@ -507,4 +507,4 @@ our `.bin` file are repsented exactly as defined in `game.map`, the only differe
 thatthe beginning of the `.bin` is (duh) going to be offset `0x0`, but will be relocated to
 `0x60000000` on the actual device.
 
-The `pdc` invocation when using C only projects basically just copy + pastes as far as I can tell.
+The `pdc` invocation when using C only projects basically just packages the bytes as far as I can tell.
