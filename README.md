@@ -5,6 +5,7 @@ For funsies write ups of some play.date information I've found while tinkering.
 Note:
 > This is completely unofficial and is not affiliated with Panic in any way whatsoever. Everything could even be wrong! (Though if there is a technical inaccuracy you find please file an issue). Any use of any information, idea, code or otherwise from this repository is done at your own risk.
 
+All this work (when applicable) uses SDK 1.12, which used SDK license 1.0.
 
 ## What is this
 
