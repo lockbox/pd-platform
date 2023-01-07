@@ -8,5 +8,9 @@
     - [Building Life](./binary/Building.md)
     - [Binary Structure](./binary/BinaryStructure.md)
 
-- [Console](./console/README.md)
+- [Game Console](./console/README.md)
+    - [Valid Memory](./console/ValidMemory.md)
+    - [Connected Peripherals](./console/peripherals.md)
+    - [Game Console Overview]()
+
 - [pd-OS](./pdOS/README.md)
