@@ -22,4 +22,4 @@ docs/book/*
 
 # ignore build directories
 **/build/
-**/buid-sim/
+**/build-sim/
