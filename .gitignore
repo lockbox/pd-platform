@@ -12,3 +12,14 @@ Cargo.lock
 # ignore the generated contents of the book, but keep the directory
 docs/book/*
 !docs/book/.gitkeep
+
+# ignore the generated "Source" folders from `pdc`
+**/Source/
+!**/Source/pdxinfo
+
+# ignore the generated "*.pdx" folders from `pdc`
+**/*.pdx/
+
+# ignore build directories
+**/build/
+**/buid-sim/
