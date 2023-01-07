@@ -33,7 +33,7 @@ Using some quick n dirty C we can dump the address to the screen like below:
 C snippet:
 
 ```c
-static void log_addresses(PlaydateAPI *pd, AddressBucket_t *bucket)
+static void log_addresses(PlaydateAPI *pd)
 {
     char * api_base;
     char * pd_address;
@@ -60,12 +60,13 @@ we could probably skip the rest of these methods to get the code for the OS,
 but let's do it anyways.
 
 ### Walking the stack
-- Make an example program to show what the stack config is going to look like
-- Make one that visualizes the live stack in game
-- Traverse and yolo
+- [ ] Make an example program to show what the stack config is going to look like
+- [ ] Make one that visualizes the stack in game
+- [ ] Traverse and yolo
 
 This is a fun exercise of walking the stack, intuitively we will imagine
-the stack growing down, as the addresses decrease the more items you add. Note that because we are executing exclusively in `Thumb2` mode
+the stack growing down, as the addresses decrease the more items you add.
+Note that because we are executing exclusively in `Thumb2` mode
 the calling convention / ABI that will be used on the play.date is
 documented [here](https://developer.arm.com/documentation/dui0041/c/Thumb-Procedure-Call-Standard/About-the-Thumb-Procedure-Call-Standard).
 
