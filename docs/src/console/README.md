@@ -9,19 +9,21 @@ To do that we're going to need to write some code to figure out where the
 OS is stored, where the heap is, where code objects are, which flash banks are being used, whch hardware is being used etc.
 
 We do know that the [ESP8266 is connected via UART](), and we also know that
-there is a [peripheral accelerometer]()  onboard as well.
+there is a [peripheral accelerometer]()  onboard as well (and soon a stereo dock).
 
-# Flash banks used
+# Memory banks used
+To determine valid memory address ranges in RAM, we can start with a couple of easy no-crash-no-risk methods before just yolo touching different regions to see
+if the play.date crashes or not
 
+First we're going to try
 
-# RAM banks used
-## No-risk-no-crash
-To determine valid memory address ranges in RAM, we can start with a couple of easy no-crash-no-risk methods.
-
-- Use the `PlaydateAPI` address
+- Using the `PlaydateAPI` address to get valid regions
+- Using allocator memory to get a valid region
+- Get the stack memory
+- Look at function addresses to see where valid code space is
 - Walk the stack
 
-### Using the PlaydateAPI address
+## Using the PlaydateAPI address
 Using the pointer provided to our event handler we can mask off the lower bits
 and find which RAM bank the heap with the playdate object is in (or stack address / flash address
 if its not stored on the heap, TBD)
@@ -52,14 +54,85 @@ static void log_addresses(PlaydateAPI *pd)
 }
 ```
 
-So, this is cool. Instead of being a dynamically allocated object or a
-populated struct, its just hardcoded in a flash region. Cool.
+What this tells us is that the pd api is allocated in SRAM (system SRAM
+starts at `0x20000000` as per [docs section 2.3](https://www.st.com/resource/en/reference_manual/dm00124865-stm32f75xxx-and-stm32f74xxx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf)).
+Cool, now that we have some progress, we're going to dump some more
+addresses to see what we're working with.
 
-What this tells us is that the `0x20000000` region is valid flash, so
-we could probably skip the rest of these methods to get the code for the OS,
-but let's do it anyways.
+## Using more addresses
 
-### Walking the stack
+Now we're going to still use the pd api address, but now we're going to
+allocate something on the heap and use that address as well, and allocate
+something on the stack and use that address (Note that the stack is setup
+to be only `61800` bytes a la `C_API/buildsupport/*.cmake` and
+`C_API/Examples/*/Makefile`).
+
+So, lets see what we got:
+
+![addresses](./addresses.png)
+
+corresponding snippet:
+
+```c
+static void log_addresses(PlaydateAPI *pd)
+{
+    char * api_base;
+    char * pd_address;
+    char * heap_obj;
+    char * heap_base;
+    char * stack_obj;
+    char * stack_base;
+    char * code_ptr;
+
+    // create the statements
+    pd->system->formatString(&api_base, "API Base Address: %p", (uint32_t)pd & 0xf0000000);
+    pd->system->formatString(&pd_address, "PD API Address: %p", pd);
+    pd->system->formatString(&heap_base, "Heap Base Address: %p", ((uint32_t)api_base & 0xf0000000));
+    pd->system->formatString(&heap_obj, "Heap Address: %p", api_base);
+    pd->system->formatString(&stack_base, "Stack Base Address: %p", ((uint32_t)&api_base & 0xf0000000));
+    pd->system->formatString(&stack_obj, "Stack Address: %p", &api_base);
+    pd->system->formatString(&code_ptr, "&formatString: %p", pd->system->formatString);
+
+    // write the statements
+    write_line(pd, api_base);
+    write_line(pd, pd_address);
+    write_line(pd, heap_base);
+    write_line(pd, heap_obj);
+    write_line(pd, stack_base);
+    write_line(pd, stack_obj);
+    write_line(pd, code_ptr);
+
+    // free the statements
+    FREE(api_base);
+    FREE(pd_address);
+    FREE(heap_base);
+    FREE(heap_obj);
+    FREE(stack_base);
+    FREE(stack_obj);
+    FREE(code_ptr);
+}
+```
+
+Cool, so this looks like we have a (so far) deterministic stack address
+(`0x2003807c`) for the pd api handle, and that the heap objects we
+allocate during games are going to be allocated immediately after the
+game code (remember that the game is mapped to `0x60000000`) in ram.
+Additionally this shows us that the flash region beng used for code
+(specifically the flash region that `pd->system->formatString` is in)
+is the flash bank that starts at `0x8000000`.
+
+Flash bank table for reference ([section 3.3.1](https://www.st.com/resource/en/reference_manual/dm00124865-stm32f75xxx-and-stm32f74xxx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf)):
+
+![flash_blocks.png](./flash_blocks.png)
+
+So what we can glean from this table (and the fact that we can run code on it)
+is that we have permission to access the memory and execute it (haven't seen
+many things that allow execute only permissions), and that the entire flash
+region is from address `0x08000000` to `0x080FFFFF`). So we can probably just
+dump all that code right now if we wanted to, BUT we still have a fun exercise
+comming up.
+
+## Walking the stack
 - [ ] Make an example program to show what the stack config is going to look like
 - [ ] Make one that visualizes the stack in game
 - [ ] Traverse and yolo
@@ -161,13 +234,6 @@ When the return link value for a function call is placed in the pc:
     is encoded in a1, {a1, a2}, or {a1, a2, a3}, depending on its 
     precision.
 ```
-
-## Yolo swaggins methods
-- read from the pages
-    then range
-- look @ config stuffs
-good time to check the current permission bits when running the game
-whats allowed/  enabled vs not
 
 
 # Connected peripherals

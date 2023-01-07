@@ -23,3 +23,6 @@ docs/book/*
 # ignore build directories
 **/build/
 **/build-sim/
+
+# ignore vscode
+.vscode/
