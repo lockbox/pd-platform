@@ -26,3 +26,6 @@ docs/book/*
 
 # ignore vscode
 .vscode/
+
+# ignore .bin
+**/*.bin
