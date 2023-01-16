@@ -152,7 +152,7 @@ static void dump_otp(PlaydateAPI *pd)
 Still crashing, though after looking back through the re notes I noticed
 
 1) they do use OTP (cool) and
-2) once upon a time they [didn't validate the pointers](https://github.com/jaames/playdate-reverse-engineering/blob/main/usb/usb.md#unlock) (or something to that effect)
+2) once upon a time they [didn't validate the pointers](https://github.com/jaames/playdate-reverse-engineering/blob/main/usb/usb.md#unlock) (or something to that effect - most likely they MPU wasn't actually enabled).
 
 Upon further attempts I'm assuming that any memory accessed by the kernel for
 the process is limited to the program stack / heap as the following did not work.
