@@ -20,3 +20,4 @@
 
 - [Errata](./errata/README.md)
     - [Triaging Hard Float Disassembly](./errata/TriagingHardFloatDisassmbly.md)
+    - [FPv5 meets Worl](./errata/FPv5MeetWorld.md)
