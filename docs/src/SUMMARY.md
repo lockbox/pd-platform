@@ -18,5 +18,5 @@
     - [Triaging User Mode flash dump](./pdOS/TriagingUserFlashDump.md)
     - [Searching for FreeRTOS code](./pdOS/SearchingForFreeRTOSCode.md)
 
-- Errata
+- [Errata](./errata/README.md)
     - [Triaging Hard Float Disassembly](./errata/TriagingHardFloatDisassmbly.md)
