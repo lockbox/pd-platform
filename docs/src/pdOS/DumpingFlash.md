@@ -169,4 +169,6 @@ the new play.date versions are using (working) MPU builds, rude.
 
 Oh well, got user mode dumps, time to RE a bit.
 
+Next: [Triaging User Flash Dump](./TriagingUserFlashDump.md)
+
 ![skeletor.gif](https://media.tenor.com/jdFD8PpUK64AAAAC/skeletor-running-away.gif)
