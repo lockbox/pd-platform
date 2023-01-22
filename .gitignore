@@ -29,3 +29,6 @@ docs/book/*
 
 # ignore .bin
 **/*.bin
+
+# ignore binary ninja db's
+**/*.bndb
