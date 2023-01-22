@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Searching for FreeRTOS code - pd-platform</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../Overview.html">Introduction</a></li><li class="chapter-item expanded "><a href="../binary/index.html"><strong aria-hidden="true">1.</strong> Game Binary Internals</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../binary/GameOfLife.html"><strong aria-hidden="true">1.1.</strong> Game of Life, at a Glance</a></li><li class="chapter-item expanded "><a href="../binary/Building.html"><strong aria-hidden="true">1.2.</strong> Building Life</a></li><li class="chapter-item expanded "><a href="../binary/BinaryStructure.html"><strong aria-hidden="true">1.3.</strong> Binary Structure</a></li></ol></li><li class="chapter-item expanded "><a href="../console/index.html"><strong aria-hidden="true">2.</strong> Game Console</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../console/ValidMemory.html"><strong aria-hidden="true">2.1.</strong> Valid Memory</a></li><li class="chapter-item expanded "><a href="../console/peripherals.html"><strong aria-hidden="true">2.2.</strong> Connected Peripherals</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> Game Console Overview</div></li></ol></li><li class="chapter-item expanded "><a href="../pdOS/index.html"><strong aria-hidden="true">3.</strong> pd-OS</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../pdOS/DumpingFlash.html"><strong aria-hidden="true">3.1.</strong> Dumping what flash we can</a></li><li class="chapter-item expanded "><a href="../pdOS/TriagingUserFlashDump.html"><strong aria-hidden="true">3.2.</strong> Triaging User Mode flash dump</a></li><li class="chapter-item expanded "><a href="../pdOS/SearchingForFreeRTOSCode.html" class="active"><strong aria-hidden="true">3.3.</strong> Searching for FreeRTOS code</a></li></ol></li><li class="chapter-item expanded "><a href="../errata/index.html"><strong aria-hidden="true">4.</strong> Errata</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../errata/TriagingHardFloatDisassmbly.html"><strong aria-hidden="true">4.1.</strong> Triaging Hard Float Disassembly</a></li><li class="chapter-item expanded "><a href="../errata/FPv5MeetWorld.html"><strong aria-hidden="true">4.2.</strong> FPv5 meets Worl</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">pd-platform</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/lockbox/pd-platform" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="searching-for-freertos-code"><a class="header" href="#searching-for-freertos-code">Searching for FreeRTOS code</a></h1>
+<p>So starting off, we know a couple things, we have a memory dump, and we know that the
+processor is the <code>STM32F746IE</code>, which has internal flash range from <code>0x08000000</code> to
+<code>0x080FFFFF</code> inclusive. We are able to dump flash starting at <code>0x08050000</code>, and we know
+that the MPU is enabled. We are (currently) trying to figure out where the <code>FreeRTOS</code>
+code is stored in the flash dump.</p>
+<p>Let's see where some default FreeRTOS builds for ARM Cortex M7 put their code.
+In the <code>FreeRTOS</code> source tree, the demo projects are in the path <code>demo/&lt;platform-info&gt;</code>,
+so we'll see if we can find a couple <code>MPU</code> + <code>Cortex M7</code> projects and see if
+they have attached linker scripts.</p>
+<p>Bingo.</p>
+<ul>
+<li>
+<p><a href="https://github.com/FreeRTOS/FreeRTOS/blob/main/FreeRTOS/Demo/CORTEX_MPU_M7_NUCLEO_H743ZI2_GCC_IAR_Keil/Projects/GCC/STM32H743ZITX_FLASH.ld">CORTEX_MPU_M7_NUCLEO_H743ZI2_GCC_IAR_Keil</a></p>
+</li>
+<li>
+<p><a href="https://github.com/FreeRTOS/FreeRTOS/blob/main/FreeRTOS/Demo/CORTEX_M7_STM32F7_STM32756G-EVAL_IAR_Keil/System_IAR/stm32f756xx_flash.icf">CORTEX_M7_STM32F7_STM32756G-EVAL_IAR_Keil</a></p>
+</li>
+</ul>
+<p>What we can guesstimate off of these (and the fact that we can read half the flash space)
+is that the protected &quot;kernel&quot; code is in the first half, and that user mode is in the
+second half of flash. Looking further at the linker scripts (the first one linked mainly),
+we can see that they shove the syscalls at the beginning of the user flash region like so:</p>
+<pre><code>  /* The program code and other data into &quot;FLASH&quot; Rom type memory */
+  .text :
+  {
+    /* Place the FreeRTOS System Calls first in the unprivileged region. */
+    . = ALIGN(4);
+    __syscalls_flash_start__ = .;
+    *(freertos_system_calls)
+    __syscalls_flash_end__ = .;
+    . = ALIGN(4);
+    *(.text)           /* .text sections (code) */
+    *(.text*)          /* .text* sections (code) */
+    *(.glue_7)         /* glue arm to thumb code */
+    *(.glue_7t)        /* glue thumb to arm code */
+    *(.eh_frame)
+
+    KEEP (*(.init))
+    KEEP (*(.fini))
+
+    . = ALIGN(4);
+    _etext = .;        /* define a global symbols at end of code */
+  } &gt;FLASH
+</code></pre>
+<p>So we can probably just make a sample project for ourselves and then use the generated
+<code>.map</code> listing files to see which syscalls are included and if any of the code looks similar.</p>
+<p>Except, I'm lazy and I don't want to do it by hand. So we're going to attempt to make binary
+ninja signatures with <a href="https://github.com/Vector35/sigkit/">sigkit</a> and go hunting for syscalls.</p>
+<p>First though, we're going to do some basic recon:</p>
+<p>From the <a href="https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/bb6071e1df3168a64dc2ce79de8aa91b7995ba23/include/mpu_prototypes.h">MPU Syscalls</a> page:</p>
+<blockquote>
+<p>When the MPU is used the standard (non MPU) API functions are mapped to
+equivalents that start &quot;MPU_&quot;, the prototypes for which are defined in this
+header files.  This will cause the application code to call the MPU_ version
+which wraps the non-MPU version with privilege promoting then demoting code,
+so the kernel code always runs will full privileges.</p>
+</blockquote>
+<p>This sounds super jank lol, in an ideal secure world the user thread should not be getting promoted ever.
+Here's to minimal os security woop woooppp</p>
+<h3 id="grep--win"><a class="header" href="#grep--win">grep == win</a></h3>
+<p>First I'm going to see if there are any <a href="https://developer.arm.com/documentation/dui0646/c/The-Cortex-M7-Instruction-Set/Miscellaneous-instructions/SVC">SVC</a>
+invocations so we know what we're dealing with. To do that (instead of a cool way that is better like
+a python script in binary ninja so we know what functions own the <code>svc</code> calls), we're going to
+disassemble all of userspace bin, then <code>grep</code> for all the syscall instructions,
+then trim down to the unique syscalls, and then count the lines.</p>
+<pre><code class="language-bash">arm-none-eabi-objdump -D -b binary -marm -Mforce-thumb --adjust-vma=0x08050000 0x8050000_0x80fffff_playdate.bin | grep svc | sed -e&quot;s/;//p&quot; | awk '{$1=$1};1' | cut -d ' ' -f 4 | sort | uniq | wc -l
+$ 66
+</code></pre>
+<p>So our kernel surface area is 66 syscalls, by default FreeRTOS ships with a couple depending on the platform, and has a ton pre-implemented (but not assigned to numbers afaics) so theres a lot of things going on here, cool. I'm assuming that
+the pre-implemented syscalls are going to be lower numbers and any custom ones are descending starting from <code>0xff</code> (255).</p>
+<p>Reminder of our goals here - we know that <a href="https://devforum.play.date/t/network-access-like-whitewater-wipeout-leader-boards/5598/2">only season games</a>
+can use internet, and we can safely assume that there is some
+functionality on board to do that - the only question is going to
+be if that is exposed to games in userspace or if it is hidden
+behind a syscall or completely handled in kernel space.</p>
+<p>And we need find a way to automatically signature a bunch of
+functions so we don't have to waste a bunch of time doing boring
+RE. So we're going to build an example FreeRTOS project with
+MPU enabled and all of the syscalls, then build signatures from
+that and attempt to locate any code in our userspace dump.</p>
+<h1 id="building-freertos"><a class="header" href="#building-freertos">Building FreeRTOS</a></h1>
+<p>TODO</p>
+<p><a href="https://github.com/FreeRTOS/FreeRTOS/blob/main/FreeRTOS/Demo/CORTEX_MPU_M7_NUCLEO_H743ZI2_GCC_IAR_Keil/Config/FreeRTOSConfig.h">Example <code>FreeRTOSConfig.h</code></a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../pdOS/TriagingUserFlashDump.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../errata/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../pdOS/TriagingUserFlashDump.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../errata/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

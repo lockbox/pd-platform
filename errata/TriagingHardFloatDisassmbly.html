@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Triaging Hard Float Disassembly - pd-platform</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../Overview.html">Introduction</a></li><li class="chapter-item expanded "><a href="../binary/index.html"><strong aria-hidden="true">1.</strong> Game Binary Internals</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../binary/GameOfLife.html"><strong aria-hidden="true">1.1.</strong> Game of Life, at a Glance</a></li><li class="chapter-item expanded "><a href="../binary/Building.html"><strong aria-hidden="true">1.2.</strong> Building Life</a></li><li class="chapter-item expanded "><a href="../binary/BinaryStructure.html"><strong aria-hidden="true">1.3.</strong> Binary Structure</a></li></ol></li><li class="chapter-item expanded "><a href="../console/index.html"><strong aria-hidden="true">2.</strong> Game Console</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../console/ValidMemory.html"><strong aria-hidden="true">2.1.</strong> Valid Memory</a></li><li class="chapter-item expanded "><a href="../console/peripherals.html"><strong aria-hidden="true">2.2.</strong> Connected Peripherals</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> Game Console Overview</div></li></ol></li><li class="chapter-item expanded "><a href="../pdOS/index.html"><strong aria-hidden="true">3.</strong> pd-OS</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../pdOS/DumpingFlash.html"><strong aria-hidden="true">3.1.</strong> Dumping what flash we can</a></li><li class="chapter-item expanded "><a href="../pdOS/TriagingUserFlashDump.html"><strong aria-hidden="true">3.2.</strong> Triaging User Mode flash dump</a></li><li class="chapter-item expanded "><a href="../pdOS/SearchingForFreeRTOSCode.html"><strong aria-hidden="true">3.3.</strong> Searching for FreeRTOS code</a></li></ol></li><li class="chapter-item expanded "><a href="../errata/index.html"><strong aria-hidden="true">4.</strong> Errata</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../errata/TriagingHardFloatDisassmbly.html" class="active"><strong aria-hidden="true">4.1.</strong> Triaging Hard Float Disassembly</a></li><li class="chapter-item expanded "><a href="../errata/FPv5MeetWorld.html"><strong aria-hidden="true">4.2.</strong> FPv5 meets Worl</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">pd-platform</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/lockbox/pd-platform" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="triaging-hard-float-disassembly"><a class="header" href="#triaging-hard-float-disassembly">Triaging Hard Float Disassembly</a></h1>
+<p>Anytime anyone tells you &quot;I had to look at [arbitrary compiler] source today&quot;,
+that's a bad sign. It's like if someone told you they pooped today, what is
+so wrong that there was a need to notify you that they pooped???</p>
+<p>Well, I had to look at <code>gcc</code> source, and it's because disassembler's don't
+support ARM FPv5 (note that gdb libopcode <a href="https://github.com/bminor/binutils-gdb/blob/master/opcodes/arm-dis.c#L1237">seem's to</a>
+albeit associates this FPU version with ARMv8 - but at least there's that).</p>
+<h1 id="what-is-arm-fpv5-and-why-does-this-matter"><a class="header" href="#what-is-arm-fpv5-and-why-does-this-matter">What is ARM FPv5 and why does this matter</a></h1>
+<p>For the STM32F746IE MCU (our target processor), the Playdate uses FPv5
+single-precision floating point support, therefore there are fancy
+instructions that aren't supported that ruin all our disassembly.</p>
+<h2 id="hard-vs-soft-float"><a class="header" href="#hard-vs-soft-float">Hard vs Soft Float</a></h2>
+<p>They do the same math, except Hard float is implemented in <em>Hard</em> ware,
+and Soft float is implemented in <em>Soft</em> ware. TLDR; Hard float is orders
+of magnitude faster, at the cost of higher power consumption and a more
+expensive MCU etc.</p>
+<h2 id="fpv5-specification"><a class="header" href="#fpv5-specification">FPv5 Specification</a></h2>
+<p><a href="https://developer.arm.com/documentation/ddi0403/latest">Architecture Reference Manual</a>
+- chapter 6 is <strong>The Floating-point Instruction Set Encoding</strong></p>
+<p><a href="https://developer.arm.com/documentation/dui0646/c/The-Cortex-M7-Instruction-Set/Floating-point-instructions">Floating Point Instructions</a></p>
+<h1 id="wtf-are-they-doing-at-arm-and-can-i-have-some"><a class="header" href="#wtf-are-they-doing-at-arm-and-can-i-have-some">WTF are they doing at ARM (and can I have some)</a></h1>
+<p>Primer: <a href="https://stackoverflow.com/questions/28669905/what-is-the-difference-between-the-arm-thumb-and-thumb-2-instruction-encodings">ARM mode vs. Thumb Mode</a></p>
+<p>Primer: <a href="https://developer.arm.com/documentation/ka005091/1-0/?lang=en">What are FPU, VFP, ASE, NEON, MPE, SVE, SME, MVE, and VPU?</a></p>
+<p>simd + neon + ase + mpe + vfp(v1 -&gt; v5) + vfp11 + mve can u just not, plz and ty.</p>
+<h1 id="straight-to-the-gcc-source"><a class="header" href="#straight-to-the-gcc-source">Straight to the (gcc) source</a></h1>
+<p><strong>&quot;why not just use the docs + libopcodes if they already support it&quot;</strong></p>
+<p>Because sister, I have seen the beyond and I'm sick of the docs being different
+from real life. That and an incorrect lifter is worse than an absent lifter.</p>
+<p>So, I'm going to use the thing that emits the actual code to add <code>FPv5</code> support.</p>
+<p>For science.</p>
+<p>And because I hate myself.</p>
+<h2 id="overview-of-gcc-source-tree"><a class="header" href="#overview-of-gcc-source-tree">Overview of gcc source tree</a></h2>
+<p><a href="https://github.com/gcc-mirror/gcc">Source tree</a></p>
+<ul>
+<li>Top Level docs: <a href="https://gcc.gnu.org/onlinedocs/gccint/Top-Level.html#Top-Level">link</a></li>
+<li>What we care about: <a href="https://gcc.gnu.org/onlinedocs/gccint/gcc-Directory.html#gcc-Directory">link</a>
+<ul>
+<li>specifically we want to know how a <code>gcc</code> backend is created (ie ARM)</li>
+<li>note that a frontend is something like the C programming language, while the
+backend is a platform / mcu architecture</li>
+</ul>
+</li>
+</ul>
+<h2 id="overview-of-a-gcc-backend"><a class="header" href="#overview-of-a-gcc-backend">Overview of a gcc backend</a></h2>
+<p><a href="https://gcc.gnu.org/onlinedocs/gccint/Back-End.html#Back-End">GCC Backend docs</a></p>
+<p>Of note:
+&gt;A directory machine under gcc/config, containing a machine description machine.md file (see <a href="https://gcc.gnu.org/onlinedocs/gccint/Machine-Desc.html#Machine-Desc">Machine Descriptions</a>), header files machine.h and machine-protos.h and a source file machine.c (see <a href="https://gcc.gnu.org/onlinedocs/gccint/Target-Macros.html#Target-Macros">Target Description Macros and Functions</a>), possibly a target Makefile fragment t-machine (see <a href="https://gcc.gnu.org/onlinedocs/gccint/Target-Fragment.html#Target-Fragment">The Target Makefile Fragment</a>), and maybe some other files. The names of these files may be changed from the defaults given by explicit specifications in config.gcc.</p>
+<p>We're mostly concerned with how instructions are emitted and what they look like, so we want to look at
+the machine descriptions.</p>
+<h2 id="overview-of-arm-gcc-backend"><a class="header" href="#overview-of-arm-gcc-backend">Overview of ARM gcc backend</a></h2>
+<h2 id="how-does-gcc-do-arm-fpv5"><a class="header" href="#how-does-gcc-do-arm-fpv5">How does GCC do ARM FPv5</a></h2>
+<p>Next: <a href="./FPv5MeetWorld.html">FPv5 meet World</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../errata/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../errata/FPv5MeetWorld.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../errata/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../errata/FPv5MeetWorld.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
